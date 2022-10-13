@@ -1,4 +1,4 @@
-report 50000 "DWH Loading data"
+report 50003 "DWH Loading data"
 {
     Caption = 'DWH Loading data';
     ApplicationArea = all;
@@ -13,6 +13,10 @@ report 50000 "DWH Loading data"
 
         }
     }
+    trigger OnPreReport()
+    begin
+        Import();
+    end;
 
     procedure Import()
     var
@@ -39,7 +43,7 @@ report 50000 "DWH Loading data"
                 "DWH integration log".DebtorAddress := GetText(Buffer, 4, Row);
                 "DWH integration log".CaseID := GetText(Buffer, 5, Row);
                 "DWH integration log".CaseExpirationDate := GetDate(Buffer, 6, Row);
-                "DWH integration log".SDI := GetNumber(Buffer, 7, Row);
+                "DWH integration log".SDI := 0000000;
                 EVALUATE("DWH integration log".DocumentType, GetText(Buffer, 8, Row));
                 "DWH integration log".TransactionID := GetText(Buffer, 9, Row);
                 "DWH integration log".PortfolioID := GetText(Buffer, 10, Row);

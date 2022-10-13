@@ -1,10 +1,11 @@
-page 50001 "DWH integration log"
+page 50005 "DWH integration archive log"
 {
-    Caption = 'DWH integration log';
+    Caption = 'DWH integration archive log';
     ApplicationArea = all;
     UsageCategory = Lists;
     PageType = List;
-    SourceTable = "DWH integration log";
+    SourceTable = "DWH integration archive log";
+    Editable = false;
 
     layout
     {
@@ -166,24 +167,5 @@ page 50001 "DWH integration log"
 
         }
     }
-    actions
-    {
-        area(Processing)
-        {
-            action("Process all data")
-            {
-                Caption = 'Process all data';
-                Promoted = true;
-                PromotedCategory = Process;
-                Image = ImportExcel;
 
-                trigger OnAction()
-                var
-                    ProcessData: Report "DWH Data processing";
-                begin
-                    ProcessData.ProcessAllData();
-                end;
-            }
-        }
-    }
 }
