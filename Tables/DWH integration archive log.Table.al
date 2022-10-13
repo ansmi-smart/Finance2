@@ -1,7 +1,6 @@
-table 50004 "DWH integration archive log"
+table 50002 "DWH integration archive log"
 {
     Caption = 'DWH integration archive log';
-    DataClassification = ToBeClassified;
 
     fields
     {
