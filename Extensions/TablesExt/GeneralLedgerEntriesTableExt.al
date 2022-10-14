@@ -6,7 +6,7 @@ tableextension 50001 "G/L Entry Table Ext." extends "G/L Entry"
         {
             Caption = 'CaseID';
             FieldClass = FlowField;
-            CalcFormula = lookup(Customer.CaseID where("No." = field("G/L Account No.")));
+            CalcFormula = lookup(Customer.CaseID where("No." = field("Source No.")));
         }
     }
 }

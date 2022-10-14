@@ -1,4 +1,4 @@
-pageextension 50011 "Posted Sales Cr. Memos PageExt" extends "Posted Sales Credit Memos"
+pageextension 50013 "Posted Sales Cr. Memos PageExt" extends "Posted Sales Credit Memos"
 {
     layout
     {
