@@ -5,7 +5,7 @@ page 50005 "DWH integration archive log"
     UsageCategory = Lists;
     PageType = List;
     SourceTable = "DWH integration archive log";
-    Editable = false;
+    //Editable = false;
 
     layout
     {
@@ -165,6 +165,40 @@ page 50005 "DWH integration archive log"
                 }
             }
 
+        }
+    }
+
+    actions
+    {
+        area(Processing)
+        {
+            action("Transfer data from archive to Log")
+            {
+                Caption = 'Transfer data from archive to Log';
+                Promoted = true;
+                PromotedCategory = Process;
+
+                trigger OnAction()
+                var
+                    Archive: Page "DWH integration archive log";
+                    LoadedData: Record "DWH integration log";
+                    LineNo: Integer;
+                begin
+                    CurrPage.SetSelectionFilter(Rec);
+                    Rec.FindSet();
+
+                    repeat
+                        if LoadedData.FindSet() then
+                            LineNo := LoadedData.Count + 1
+                        else
+                            LineNo := 1;
+                        LoadedData.TransferFields(Rec, true);
+                        LoadedData."Line No." := LineNo;
+                        LoadedData.Insert();
+                        Rec.Delete();
+                    until Rec.Next() = 0;
+                end;
+            }
         }
     }
 
