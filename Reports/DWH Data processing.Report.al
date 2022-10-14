@@ -4,6 +4,12 @@ report 50004 "DWH Data processing"
     ProcessingOnly = true;
     UseRequestPage = false;
 
+
+    trigger OnInitReport()
+    begin
+        ProcessAllData();
+    end;
+
     procedure ProcessAllData()
     var
         LoadedData: Record "DWH integration log";
@@ -51,11 +57,18 @@ report 50004 "DWH Data processing"
         else begin
             Customer.Init();
             Customer."No." := NoSeriesMgt.GetNextNo('CUST', LoadedData.PostingDate, true);
-            //Fiscal Code, Case ID Expiration Date, SDI
             Customer.Validate(Name, LoadedData.DebtorName);
             Customer.Validate(CaseID, LoadedData.CaseID);
-            if (LoadedData.DebtorTaxCode <> '  ') then
+            Customer.Validate("Case ID Expiration Date", LoadedData.CaseExpirationDate);
+            Customer.Validate(SDI, Format(LoadedData.SDI));
+            if (LoadedData.DebtorTaxCode <> '  ') then begin
+                if (LoadedData.DebtorTaxCode.Contains('-')) then begin
+                    Customer.Validate("Fiscal Code", LoadedData.DebtorTaxCode.Substring(1, LoadedData.DebtorTaxCode.IndexOf('-') - 1));
+                    Customer.Validate("VAT Registration No.", LoadedData.DebtorTaxCode.Substring(LoadedData.DebtorTaxCode.IndexOf('-') + 1));
+                end else
+                    Customer.Validate("Fiscal Code", LoadedData.DebtorTaxCode);
                 Customer.Validate("VAT Registration No.", LoadedData.DebtorTaxCode.Substring(LoadedData.DebtorTaxCode.IndexOf('-') + 1));
+            end;
             if (LoadedData.DebtorAddress <> '  ') then begin
                 Customer.Validate(Address, LoadedData.DebtorAddress.Substring(1, StrLen(LoadedData.DebtorAddress) - 5));
                 Customer.Validate("Post Code", LoadedData.DebtorAddress.Substring(StrLen(LoadedData.DebtorAddress) - 5));

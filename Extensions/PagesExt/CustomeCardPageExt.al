@@ -9,21 +9,41 @@ pageextension 50008 "Custome Card Page Ext." extends "Customer Card"
             {
                 Caption = 'Case ID';
             }
+            field("Case ID Expiration Date"; Rec."Case ID Expiration Date")
+            {
+                Caption = 'Case ID Expiration Date';
+            }
+        }
+
+        addafter("Full Name")
+        {
+
+            field("Fiscal Code"; Rec."Fiscal Code")
+            {
+                Caption = 'Fiscal Code';
+            }
+            field(SDI; Rec.SDI)
+            {
+                Caption = 'SDI';
+            }
         }
     }
     actions
     {
-        addlast(Approval)
+        addafter(Attachments)
         {
             action("Clear client's personal data")
             {
                 Caption = 'Clear client`s personal data';
-                Image = Check;
+                Image = ClearLog;
                 Promoted = true;
-                PromotedCategory = Category5;
+                PromotedCategory = Category9;
+
                 trigger OnAction()
+                var
+                    DataProcessing: Codeunit ClearCustomerPersonalData;
                 begin
-                    Message('test');
+                    DataProcessing.ClearCustomerPersonalData(Rec);
                 end;
             }
         }
