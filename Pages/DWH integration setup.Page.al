@@ -37,17 +37,17 @@ page 50007 "DWH integration setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Default VAT Bus. Posting Group field.';
                 }
-                field("Default Customer Post. Group "; Rec."Default Customer Post. Group ")
+                field("Default Customer Post. Group "; Rec."Default Customer Post. Group")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Default Customer Posting Group  field.';
+                    ToolTip = 'Specifies the value of the Default Customer Posting Group field.';
                 }
-                field("Expense Gen. Journal Template "; Rec."Expense Gen. Journal Template ")
+                field("Expense Gen. Journal Template "; Rec."Expense Gen. Journal Template")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Expense General Journal Template  field.';
+                    ToolTip = 'Specifies the value of the Expense General Journal Template field.';
                 }
-                field("Expense General Journal Batch "; Rec."Expense General Journal Batch ")
+                field("Expense General Journal Batch "; Rec."Expense General Journal Batch")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Expense General Journal Batch  field.';
@@ -57,10 +57,10 @@ page 50007 "DWH integration setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Payments General Journal Template field.';
                 }
-                field("Payments Gen. Journal Batch "; Rec."Payments Gen. Journal Batch ")
+                field("Payments Gen. Journal Batch "; Rec."Payments Gen. Journal Batch")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Payments General Journal Batch  field.';
+                    ToolTip = 'Specifies the value of the Payments General Journal Batch field.';
                 }
                 field("Invoice default G/L Account"; Rec."Invoice default G/L Account")
                 {

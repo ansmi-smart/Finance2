@@ -122,18 +122,18 @@ table 50000 "DWH integration log"
         {
             Caption = 'Invoiced';
         }
-        field(29; "meta_Chck"; Option)
+        field(29; "Meta Check"; Option)
         {
-            Caption = 'meta_Chck';
+            Caption = 'Meta Check';
             OptionMembers = " ","Invoice","Expense";
         }
-        field(30; "meta_MarteInsertDate"; DateTime)
+        field(30; "Meta Marte Insert Date"; DateTime)
         {
-            Caption = 'meta_MarteInsertDate';
+            Caption = 'Meta Marte Insert Date';
         }
-        field(31; "meta_DWHInsertDate"; DateTime)
+        field(31; "Meta DWH Insert Date"; DateTime)
         {
-            Caption = 'meta_DWHInsertDate';
+            Caption = 'Meta DWH Insert Date';
         }
     }
 

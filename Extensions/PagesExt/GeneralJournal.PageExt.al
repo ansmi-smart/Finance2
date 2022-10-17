@@ -4,7 +4,7 @@ pageextension 50001 "General Journal Page Ext" extends "General Journal"
     {
         addafter("Account Name")
         {
-            field(CaseID; Rec.CaseID)
+            field(CaseID; Rec."Case ID")
             {
                 ApplicationArea = All;
             }

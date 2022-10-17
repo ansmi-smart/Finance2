@@ -5,7 +5,7 @@ pageextension 50008 "Custome Card Page Ext." extends "Customer Card"
     {
         addafter("No.")
         {
-            field(CaseID; Rec.CaseID)
+            field(CaseID; Rec."Case ID")
             {
                 Caption = 'Case ID';
             }

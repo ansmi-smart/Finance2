@@ -2,11 +2,11 @@ tableextension 50003 "Sales Credit Memo Table Ext." extends "Sales Cr.Memo Heade
 {
     fields
     {
-        field(50001; CaseID; Code[20])
+        field(50001; "Case ID"; Code[20])
         {
-            Caption = 'CaseID';
+            Caption = 'Case ID';
             FieldClass = FlowField;
-            CalcFormula = lookup(Customer.CaseID where("No." = field("Sell-to Customer No.")));
+            CalcFormula = lookup(Customer."Case ID" where("No." = field("Sell-to Customer No.")));
         }
     }
 }

@@ -29,19 +29,19 @@ table 50006 "DWH integration setup"
             Caption = 'Default VAT Bus. Posting Group';
             TableRelation = "VAT Business Posting Group".Code;
         }
-        field(6; "Default Customer Post. Group "; Code[20])
+        field(6; "Default Customer Post. Group"; Code[20])
         {
-            Caption = 'Default Customer Posting Group ';
+            Caption = 'Default Customer Posting Group';
             TableRelation = "Customer Posting Group".Code;
         }
-        field(7; "Expense Gen. Journal Template "; Code[20])
+        field(7; "Expense Gen. Journal Template"; Code[20])
         {
-            Caption = 'Expense General Journal Template ';
+            Caption = 'Expense General Journal Template';
             TableRelation = "Gen. Journal Template".Name;
         }
-        field(8; "Expense General Journal Batch "; Code[20])
+        field(8; "Expense General Journal Batch"; Code[20])
         {
-            Caption = 'Expense General Journal Batch ';
+            Caption = 'Expense General Journal Batch';
             TableRelation = "Gen. Journal Batch".Name;
         }
         field(9; "Payments Gen. Journal Template"; Code[20])
@@ -49,9 +49,9 @@ table 50006 "DWH integration setup"
             Caption = 'Payments General Journal Template';
             TableRelation = "Gen. Journal Template".Name;
         }
-        field(10; "Payments Gen. Journal Batch "; Code[20])
+        field(10; "Payments Gen. Journal Batch"; Code[20])
         {
-            Caption = 'Payments General Journal Batch ';
+            Caption = 'Payments General Journal Batch';
             TableRelation = "Gen. Journal Batch".Name;
         }
         field(12; "Invoice default G/L Account"; Code[20])

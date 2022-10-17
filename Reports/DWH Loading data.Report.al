@@ -66,9 +66,9 @@ report 50003 "DWH Loading data"
                 "DWH integration log".Invoiced := GetBoolean(Buffer, 28, Row);
                 TempData := GetText(Buffer, 29, Row);
                 if (TempData = 'Error - both empty') then TempData := ' ';
-                EVALUATE("DWH integration log".meta_Chck, TempData);
-                "DWH integration log".meta_MarteInsertDate := GetDateTime(Buffer, 30, Row);
-                "DWH integration log".meta_DWHInsertDate := GetDateTime(Buffer, 31, Row);
+                EVALUATE("DWH integration log"."Meta Check", TempData);
+                "DWH integration log"."Meta Marte Insert Date" := GetDateTime(Buffer, 30, Row);
+                "DWH integration log"."Meta DWH Insert Date" := GetDateTime(Buffer, 31, Row);
                 "DWH integration log".Insert();
             end;
         end;

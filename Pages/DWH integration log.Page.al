@@ -147,20 +147,20 @@ page 50001 "DWH integration log"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Invoiced field.';
                 }
-                field(meta_Chck; Rec.meta_Chck)
+                field(meta_Chck; Rec."Meta Check")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the meta_Chck field.';
+                    ToolTip = 'Specifies the value of the Meta Check field.';
                 }
-                field(meta_MarteInsertDate; Rec.meta_MarteInsertDate)
+                field(meta_MarteInsertDate; Rec."Meta Marte Insert Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the meta_MarteInsertDate field.';
+                    ToolTip = 'Specifies the value of the Meta Marte Insert Date field.';
                 }
-                field(meta_DWHInsertDate; Rec.meta_DWHInsertDate)
+                field(meta_DWHInsertDate; Rec."Meta DWH Insert Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the meta_DWHInsertDate field.';
+                    ToolTip = 'Specifies the value of the Meta DWH Insert Date field.';
                 }
             }
 

@@ -4,7 +4,7 @@ pageextension 50009 "Posted Sales Inv. Page Ext." extends "Posted Sales Invoices
     {
         addafter("No.")
         {
-            field(CaseID; Rec.CaseID)
+            field(CaseID; Rec."Case ID")
             {
                 Caption = 'Case ID';
             }

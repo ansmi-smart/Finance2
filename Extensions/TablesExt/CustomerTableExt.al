@@ -7,9 +7,9 @@ tableextension 50009 "Customer Table Ext." extends Customer
             Caption = 'Fiscal Code ';
         }
 
-        field(50000; CaseID; Code[20])
+        field(50000; "Case ID"; Code[20])
         {
-            Caption = 'CaseID';
+            Caption = 'Case ID';
             FieldClass = Normal;
         }
         field(50001; "Case ID Expiration Date"; Date)

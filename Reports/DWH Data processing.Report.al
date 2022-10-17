@@ -60,7 +60,7 @@ report 50004 "DWH Data processing"
             Customer.Init();
             Customer."No." := NoSeriesMgt.GetNextNo('CUST', LoadedData.PostingDate, true);
             Customer.Validate(Name, LoadedData.DebtorName);
-            Customer.Validate(CaseID, LoadedData.CaseID);
+            Customer.Validate("Case ID", LoadedData.CaseID);
             Customer.Validate("Case ID Expiration Date", LoadedData.CaseExpirationDate);
             Customer.Validate(SDI, Format(LoadedData.SDI));
             if (LoadedData.DebtorTaxCode <> '  ') then begin
@@ -78,7 +78,7 @@ report 50004 "DWH Data processing"
             DWHsetup.Get();
             Customer.Validate("Gen. Bus. Posting Group", DWHsetup."Default Gen. Bus. Post. Group");
             Customer.Validate("VAT Bus. Posting Group", DWHsetup."Default VAT Bus. Posting Group");
-            Customer.Validate("Customer Posting Group", DWHsetup."Default Customer Post. Group ");
+            Customer.Validate("Customer Posting Group", DWHsetup."Default Customer Post. Group");
             Customer.Insert();
             SalesHeader.Validate("Sell-to Customer No.", Customer."No.");
         end;
@@ -134,7 +134,7 @@ report 50004 "DWH Data processing"
         end;
         GenJournal.Validate("Document No.", LoadedData.TransactionID);
         GenJournal.Validate(Description, LoadedData.Description);
-        GenJournal.Validate(CaseID, LoadedData.CaseID);
+        GenJournal.Validate("Case ID", LoadedData.CaseID);
         GenJournal."Currency Code" := LoadedData.CurrencyCode;
         if (LoadedData.DocumentType = LoadedData.DocumentType::Payment) then
             LoadedData.Amount := (-1) * LoadedData.Amount;

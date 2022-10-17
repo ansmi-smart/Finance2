@@ -4,7 +4,7 @@ pageextension 50006 "Gen. Ledger Entries Page Ext." extends "General Ledger Entr
     {
         addafter("Entry No.")
         {
-            field(CaseID; Rec.CaseID)
+            field(CaseID; Rec."Case ID")
             {
                 Caption = 'Case ID';
             }
