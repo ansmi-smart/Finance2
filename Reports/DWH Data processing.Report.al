@@ -26,6 +26,7 @@ report 50004 "DWH Data processing"
                 Archive."Line No." := LineNo;
                 Archive.Insert();
                 CreateSalesDocument(LoadedData);
+                AddGenJournalLines(LoadedData);
                 LoadedData.Delete();
             until LoadedData.Next() = 0;
         end;
@@ -96,28 +97,48 @@ report 50004 "DWH Data processing"
         SalesLines.Validate(Quantity, LoadedData.Quantity);
         SalesLines.Validate("Unit Price", LoadedData.Amount);
         SalesLines.Insert();
-
-        GenJournal.Init();
-        GenJournal.Validate("Journal Template Name", 'DEFAULT');
-        GenJournal.Validate("Journal Batch Name", 'DEFAULT');
-        GenJournal.Validate("Line No.", 10000 * (GenJournal.Count + 1));
-
-        GenJournal.Validate("Document Type", LoadedData.DocumentType);
-        GenJournal.Validate(Description, LoadedData.TransactionID);
-        //caseID
-        GenJournal.Validate("Account Type", LoadedData.AccountType);
-        GenJournal."Account No." := LoadedData.AccountNo;
-        GenJournal."Currency Code" := LoadedData.CurrencyCode;
-        if (LoadedData.DocumentType = LoadedData.DocumentType::Payment) then
-            LoadedData.Amount := (-1) * LoadedData.Amount;
-        GenJournal.Validate(Amount, LoadedData.Amount);
-        //bal. acc
-
-        GenJournal.Insert();
     end;
 
     procedure GetDimension(LoadedData: Record "DWH integration log"): Code[20]
     begin
 
+    end;
+
+    procedure AddGenJournalLines(LoadedData: Record "DWH integration log")
+    var
+        Customer: Record Customer;
+        DWHsetup: Record "DWH integration setup";
+        GenJournal: Record "Gen. Journal Line";
+    begin
+        GenJournal.Init();
+        DWHsetup.Get();
+        GenJournal.Validate("Journal Template Name", 'GENERAL');
+        GenJournal.Validate("Journal Batch Name", 'DEFAULT');
+        GenJournal.Validate("Line No.", 10000 * (GenJournal.Count + 1));
+        GenJournal.Validate("Posting Date", WorkDate());
+        if (LoadedData.DocumentType = LoadedData.DocumentType::" ") then begin
+            GenJournal.Validate("Document Type", GenJournal."Document Type"::Invoice);
+            GenJournal.Validate("Account Type", GenJournal."Account Type"::"G/L Account");
+            GenJournal.Validate("Account No.", DWHsetup."Def. Exp. Debit G/L Account");
+            GenJournal.Validate("Bal. Account Type", GenJournal."Bal. Account Type"::"G/L Account");
+            GenJournal.Validate("Bal. Account No.", DWHsetup."Def. Exp. Credit G/L Account");
+        end else begin
+            GenJournal.Validate("Document Type", LoadedData.DocumentType);
+            GenJournal.Validate("Account Type", GenJournal."Account Type"::Customer);
+            Customer.Init();
+            Customer.SetRange(Name, LoadedData.DebtorName);
+            if (Customer.FindFirst) then
+                GenJournal.Validate("Account No.", Customer."No.");
+            GenJournal.Validate("Bal. Account Type", GenJournal."Bal. Account Type"::"Bank Account");
+            GenJournal.Validate("Bal. Account No.", DWHsetup."Default Bank Account");
+        end;
+        GenJournal.Validate("Document No.", LoadedData.TransactionID);
+        GenJournal.Validate(Description, LoadedData.Description);
+        GenJournal.Validate(CaseID, LoadedData.CaseID);
+        GenJournal."Currency Code" := LoadedData.CurrencyCode;
+        if (LoadedData.DocumentType = LoadedData.DocumentType::Payment) then
+            LoadedData.Amount := (-1) * LoadedData.Amount;
+        GenJournal.Validate(Amount, LoadedData.Amount);
+        GenJournal.Insert();
     end;
 }

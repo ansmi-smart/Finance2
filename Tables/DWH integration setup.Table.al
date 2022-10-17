@@ -1,6 +1,8 @@
 table 50006 "DWH integration setup"
 {
     Caption = 'DWH integration setup';
+    DrillDownPageID = "DWH integration setup";
+    LookupPageID = "DWH integration setup";
 
     fields
     {
