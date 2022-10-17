@@ -12,30 +12,30 @@ page 50001 "DWH integration log"
         {
             repeater(General)
             {
-                field(DebtorName; Rec.DebtorName)
+                field(DebtorName; Rec."Debtor Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the DebtorName field.';
+                    ToolTip = 'Specifies the value of the Debtor Name field.';
                 }
-                field(DebtorTaxCode; Rec.DebtorTaxCode)
+                field(DebtorTaxCode; Rec."Debtor Tax Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the DebtorTaxCode field.';
+                    ToolTip = 'Specifies the value of the Debtor Tax Code field.';
                 }
-                field(DebtorAddress; Rec.DebtorAddress)
+                field(DebtorAddress; Rec."Debtor Address")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the DebtorAddress field.';
+                    ToolTip = 'Specifies the value of the Debtor Address field.';
                 }
-                field(CaseID; Rec.CaseID)
+                field(CaseID; Rec."Case ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the CaseID field.';
+                    ToolTip = 'Specifies the value of the Case ID field.';
                 }
-                field(CaseExpirationDate; Rec.CaseExpirationDate)
+                field(CaseExpirationDate; Rec."Case Expiration Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the CaseExpirationDate field.';
+                    ToolTip = 'Specifies the value of the Case Expiration Date field.';
                 }
                 field(SDI; Rec.SDI)
                 {
@@ -47,55 +47,55 @@ page 50001 "DWH integration log"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the DocumentType field.';
                 }
-                field(TransactionID; Rec.TransactionID)
+                field(TransactionID; Rec."Transaction ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the TransactionID field.';
+                    ToolTip = 'Specifies the value of the Transaction ID field.';
                 }
-                field(PortfolioID; Rec.PortfolioID)
+                field(PortfolioID; Rec."Portfolio ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the PortfolioID field.';
+                    ToolTip = 'Specifies the value of the Portfolio ID field.';
                 }
-                field(PortfolioName; Rec.PortfolioName)
+                field(PortfolioName; Rec."Portfolio Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the PortfolioName field.';
+                    ToolTip = 'Specifies the value of the Portfolio Name field.';
                 }
-                field(BatchID; Rec.BatchID)
+                field(BatchID; Rec."Batch ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the BatchID field.';
+                    ToolTip = 'Specifies the value of the Batch ID field.';
                 }
-                field(BatchName; Rec.BatchName)
+                field(BatchName; Rec."Batch Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the BatchName field.';
+                    ToolTip = 'Specifies the value of the Batch Name field.';
                 }
-                field(SegmentID; Rec.SegmentID)
+                field(SegmentID; Rec."Segment ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the SegmentID field.';
+                    ToolTip = 'Specifies the value of the Segment ID field.';
                 }
-                field(SegmentName; Rec.SegmentName)
+                field(SegmentName; Rec."Segment Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the SegmentName field.';
+                    ToolTip = 'Specifies the value of the Segment Name field.';
                 }
-                field(FlowID; Rec.FlowID)
+                field(FlowID; Rec."Flow ID")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the FlowID field.';
+                    ToolTip = 'Specifies the value of the Flow ID field.';
                 }
-                field(PostingDate; Rec.PostingDate)
+                field(PostingDate; Rec."Posting Date")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the PostingDate field.';
+                    ToolTip = 'Specifies the value of the Posting Date field.';
                 }
-                field(CurrencyCode; Rec.CurrencyCode)
+                field(CurrencyCode; Rec."Currency Code")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the CurrencyCode field.';
+                    ToolTip = 'Specifies the value of the Currency Code field.';
                 }
                 field(Description; Rec.Description)
                 {
@@ -117,25 +117,25 @@ page 50001 "DWH integration log"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Amount field.';
                 }
-                field(AccountType; Rec.AccountType)
+                field(AccountType; Rec."Account Type")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the AccountType field.';
+                    ToolTip = 'Specifies the value of the Account Type field.';
                 }
-                field(AccountNo; Rec.AccountNo)
+                field(AccountNo; Rec."Account No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the AccountNo field.';
+                    ToolTip = 'Specifies the value of the Account No. field.';
                 }
-                field("Bal. AccountType"; Rec."Bal. AccountType")
+                field("Bal. AccountType"; Rec."Bal. Account Type")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Bal. AccountType field.';
+                    ToolTip = 'Specifies the value of the Bal. Account Type field.';
                 }
-                field("Bal. AccountNo"; Rec."Bal. AccountNo")
+                field("Bal. AccountNo"; Rec."Bal. Account No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Bal. AccountNo field.';
+                    ToolTip = 'Specifies the value of the Bal. Account No. field.';
                 }
                 field(Correction; Rec.Correction)
                 {

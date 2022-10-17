@@ -9,26 +9,26 @@ table 50000 "DWH integration log"
         {
             Caption = 'Line No.';
         }
-        field(2; "DebtorName"; Text[250])
+        field(2; "Debtor Name"; Text[250])
         {
-            Caption = 'DebtorName';
+            Caption = 'Debtor Name';
         }
-        field(3; "DebtorTaxCode"; Text[250])
+        field(3; "Debtor Tax Code"; Text[250])
         {
-            Caption = 'DebtorTaxCode';
+            Caption = 'Debtor Tax Code';
         }
-        field(4; "DebtorAddress"; Text[250])
+        field(4; "Debtor Address"; Text[250])
         {
-            Caption = 'DebtorAddress';
+            Caption = 'Debtor Address';
         }
-        field(5; "CaseID"; Code[20])
+        field(5; "Case ID"; Code[20])
         {
-            Caption = 'CaseID';
+            Caption = 'Case ID';
             ExtendedDatatype = Masked;
         }
-        field(6; "CaseExpirationDate"; Date)
+        field(6; "Case Expiration Date"; Date)
         {
-            Caption = 'CaseExpirationDate';
+            Caption = 'Case Expiration Date';
         }
         field(7; "SDI"; Integer)
         {
@@ -36,48 +36,48 @@ table 50000 "DWH integration log"
         }
         field(8; "DocumentType"; Option)
         {
-            Caption = 'DocumentType';
+            Caption = 'Document Type';
             OptionMembers = " ","Payment","Refund","Invoice";
         }
-        field(9; "TransactionID"; Text[20])
+        field(9; "Transaction ID"; Text[20])
         {
-            Caption = 'TransactionID';
+            Caption = 'Transaction ID';
         }
-        field(10; "PortfolioID"; Code[30])
+        field(10; "Portfolio ID"; Code[30])
         {
-            Caption = 'PortfolioID';
+            Caption = 'Portfolio ID';
         }
-        field(11; "PortfolioName"; Code[30])
+        field(11; "Portfolio Name"; Code[30])
         {
-            Caption = 'PortfolioName';
+            Caption = 'Portfolio Name';
         }
-        field(12; "BatchID"; Code[30])
+        field(12; "Batch ID"; Code[30])
         {
-            Caption = 'BatchID';
+            Caption = 'Batch ID';
         }
-        field(13; "BatchName"; Text[50])
+        field(13; "Batch Name"; Text[50])
         {
-            Caption = 'BatchName';
+            Caption = 'Batch Name';
         }
-        field(14; "SegmentID"; Text[50])
+        field(14; "Segment ID"; Text[50])
         {
-            Caption = 'SegmentID';
+            Caption = 'Segment ID';
         }
-        field(15; "SegmentName"; Text[50])
+        field(15; "Segment Name"; Text[50])
         {
-            Caption = 'SegmentName';
+            Caption = 'Segment Name';
         }
-        field(16; "FlowID"; Text[50])
+        field(16; "Flow ID"; Text[50])
         {
-            Caption = 'FlowID';
+            Caption = 'Flow ID';
         }
-        field(17; "PostingDate"; Date)
+        field(17; "Posting Date"; Date)
         {
-            Caption = 'PostingDate';
+            Caption = 'Posting Date';
         }
-        field(18; "CurrencyCode"; Code[10])
+        field(18; "Currency Code"; Code[10])
         {
-            Caption = 'CurrencyCode';
+            Caption = 'Currency Code';
         }
         field(19; "Description"; Text[250])
         {
@@ -96,23 +96,23 @@ table 50000 "DWH integration log"
         {
             Caption = 'Amount';
         }
-        field(23; "AccountType"; Option)
+        field(23; "Account Type"; Option)
         {
-            Caption = 'AccountType';
+            Caption = 'Account Type';
             OptionMembers = " ","G/L Account","Debtor","Customer","Vendor","Bank Account","Fixed Asset","IC Partner";
         }
-        field(24; "AccountNo"; Code[20])
+        field(24; "Account No."; Code[20])
         {
-            Caption = 'AccountNo';
+            Caption = 'Account No.';
         }
-        field(25; "Bal. AccountType"; Option)
+        field(25; "Bal. Account Type"; Option)
         {
-            Caption = 'Bal. AccountType';
+            Caption = 'Bal. Account Type';
             OptionMembers = " ","G/L Account","Customer","Vendor","Bank Account","Fixed Asset","IC Partner";
         }
-        field(26; "Bal. AccountNo"; Code[20])
+        field(26; "Bal. Account No."; Code[20])
         {
-            Caption = 'Bal. AccountNo';
+            Caption = 'Bal. Account No.';
         }
         field(27; "Correction"; Boolean)
         {
