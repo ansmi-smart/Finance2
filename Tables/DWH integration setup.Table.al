@@ -57,5 +57,21 @@ table 50006 "DWH integration setup"
             Caption = 'Invoice default G/L Account';
             TableRelation = "G/L Account"."No.";
         }
+
+        field(13; "Default Bank Account"; Code[20])
+        {
+            Caption = 'Default Bank Account';
+            TableRelation = "Bank Account"."No.";
+        }
+        field(14; "Def. Exp. Debit G/L Account"; Code[20])
+        {
+            Caption = 'Default Expenses Debit G/L Account';
+            TableRelation = "G/L Account"."No.";
+        }
+        field(15; "Def. Exp. Credit G/L Account"; Code[20])
+        {
+            Caption = 'Default Expenses Credit G/L Account';
+            TableRelation = "G/L Account"."No.";
+        }
     }
 }

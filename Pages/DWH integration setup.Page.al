@@ -67,6 +67,24 @@ page 50007 "DWH integration setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Invoice default G/L Account field.';
                 }
+                field("Default Bank Account"; Rec."Default Bank Account")
+                {
+
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Invoice default Default Bank Account field.';
+                }
+                field("Def. Exp. Debit G/L Account"; Rec."Def. Exp. Debit G/L Account")
+                {
+
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Default Expenses Debit G/L Account field.';
+                }
+                field("Def. Exp. Credit G/L Account "; Rec."Def. Exp. Credit G/L Account")
+                {
+
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Default Expenses Credit G/L Account field.';
+                }
             }
         }
     }
