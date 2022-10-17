@@ -41,7 +41,7 @@ pageextension 50008 "Custome Card Page Ext." extends "Customer Card"
 
                 trigger OnAction()
                 var
-                    DataProcessing: Codeunit ClearCustomerPersonalData;
+                    DataProcessing: Report "DWH Deleting personal data";
                 begin
                     DataProcessing.ClearCustomerPersonalData(Rec);
                 end;

@@ -38,7 +38,8 @@ report 50004 "DWH Data processing"
         NoSeriesMgt: Codeunit NoSeriesManagement;
         Customer: Record Customer;
         DWHsetup: Record "DWH integration setup";
-        GenJrnl: Record "Gen. Journal Line";
+        GenJournal: Record "Gen. Journal Line";
+        Account: Record "G/L Account";
     begin
         SalesHeader.Init();
         SalesHeader.Validate("No.", NoSeriesMgt.GetNextNo(SalesHeader.GetNoSeriesCode(), LoadedData.PostingDate, true));
@@ -87,11 +88,32 @@ report 50004 "DWH Data processing"
 
         SalesLines.Init();
         SalesLines.Validate("Document Type", SalesHeader."Document Type");
-        SalesLines.Validate("Original Type", SalesLines."Original Type"::"G/L Account");
-        SalesLines.Validate("Document No.", SalesHeader."No.");
+        SalesLines."Document No." := SalesHeader."No.";
         SalesLines.Validate("Line No.", 10000);
-        SalesLines.Validate("Amount Including VAT", LoadedData.Amount);
+        SalesLines.Validate(Type, SalesLines.Type::"G/L Account");
+        Account.SetRange("No.", DWHsetup."Invoice default G/L Account");
+        SalesLines."No." := Account."No.";
+        SalesLines.Validate(Quantity, LoadedData.Quantity);
+        SalesLines.Validate("Unit Price", LoadedData.Amount);
         SalesLines.Insert();
+
+        GenJournal.Init();
+        GenJournal.Validate("Journal Template Name", 'DEFAULT');
+        GenJournal.Validate("Journal Batch Name", 'DEFAULT');
+        GenJournal.Validate("Line No.", 10000 * (GenJournal.Count + 1));
+
+        GenJournal.Validate("Document Type", LoadedData.DocumentType);
+        GenJournal.Validate(Description, LoadedData.TransactionID);
+        //caseID
+        GenJournal.Validate("Account Type", LoadedData.AccountType);
+        GenJournal."Account No." := LoadedData.AccountNo;
+        GenJournal."Currency Code" := LoadedData.CurrencyCode;
+        if (LoadedData.DocumentType = LoadedData.DocumentType::Payment) then
+            LoadedData.Amount := (-1) * LoadedData.Amount;
+        GenJournal.Validate(Amount, LoadedData.Amount);
+        //bal. acc
+
+        GenJournal.Insert();
     end;
 
     procedure GetDimension(LoadedData: Record "DWH integration log"): Code[20]
