@@ -6,53 +6,57 @@ table 50006 "DWH integration setup"
 
     fields
     {
-        field(1; "Api URL"; Text[250])
+        field(1; "Primary Key"; Code[10])
+        {
+            Caption = 'Primary Key';
+        }
+        field(2; "Api URL"; Text[250])
         {
             Caption = 'Api URL';
         }
-        field(2; "Login"; Text[50])
+        field(3; "Login"; Text[50])
         {
             Caption = 'Login';
         }
-        field(3; "Password"; Text[50])
+        field(4; "Password"; Text[50])
         {
             Caption = 'Api URL';
             ExtendedDatatype = Masked;
         }
-        field(4; "Default Gen. Bus. Post. Group"; Code[20])
+        field(5; "Default Gen. Bus. Post. Group"; Code[20])
         {
             Caption = 'Default Gen. Bus. Posting Group';
             TableRelation = "Gen. Business Posting Group".Code;
         }
-        field(5; "Default VAT Bus. Posting Group"; Code[20])
+        field(6; "Default VAT Bus. Posting Group"; Code[20])
         {
             Caption = 'Default VAT Bus. Posting Group';
             TableRelation = "VAT Business Posting Group".Code;
         }
-        field(6; "Default Customer Post. Group"; Code[20])
+        field(7; "Default Customer Post. Group"; Code[20])
         {
             Caption = 'Default Customer Posting Group';
             TableRelation = "Customer Posting Group".Code;
         }
-        field(7; "Expense Gen. Journal Template"; Code[20])
+        field(8; "Expense Gen. Journal Template"; Code[20])
         {
             Caption = 'Expense General Journal Template';
             TableRelation = "Gen. Journal Template".Name;
         }
-        field(8; "Expense General Journal Batch"; Code[20])
+        field(9; "Expense General Journal Batch"; Code[20])
         {
             Caption = 'Expense General Journal Batch';
-            TableRelation = "Gen. Journal Batch".Name;
+            TableRelation = "Gen. Journal Batch".Name where("Journal Template Name" = field("Expense Gen. Journal Template"));
         }
-        field(9; "Payments Gen. Journal Template"; Code[20])
+        field(10; "Payments Gen. Journal Template"; Code[20])
         {
             Caption = 'Payments General Journal Template';
             TableRelation = "Gen. Journal Template".Name;
         }
-        field(10; "Payments Gen. Journal Batch"; Code[20])
+        field(11; "Payments Gen. Journal Batch"; Code[20])
         {
             Caption = 'Payments General Journal Batch';
-            TableRelation = "Gen. Journal Batch".Name;
+            TableRelation = "Gen. Journal Batch".Name where("Journal Template Name" = field("Payments Gen. Journal Template"));
         }
         field(12; "Invoice default G/L Account"; Code[20])
         {
@@ -76,4 +80,13 @@ table 50006 "DWH integration setup"
             TableRelation = "G/L Account"."No.";
         }
     }
+
+    keys
+    {
+        key(Key1; "Primary Key")
+        {
+            Clustered = true;
+        }
+    }
+
 }
