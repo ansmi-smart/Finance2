@@ -14,11 +14,16 @@ report 50004 "DWH Data processing"
     var
         LoadedData: Record "DWH integration log";
         Archive: Record "DWH integration archive log";
-        LineNo: Integer;
+        EntryNo: Integer;
     begin
         if LoadedData.FindSet() then begin
             repeat
+                if (Archive.FindSet()) then
+                    EntryNo := Archive.Count + 1
+                else
+                    EntryNo := 1;
                 Archive.TransferFields(LoadedData, true);
+                Archive."Entry No." := EntryNo;
                 Archive.Insert();
                 CreateSalesDocument(LoadedData);
                 AddGenJournalLines(LoadedData);
@@ -33,6 +38,8 @@ report 50004 "DWH Data processing"
         GenJournal: Record "Gen. Journal Line";
         DimensionCode: Code[20];
         DimensionValues: Record "Dimension Value";
+        GenLedgerSetup: Record "General Ledger Setup";
+        SalesRecSetup: Record "Sales & Receivables Setup";
 
     procedure CreateSalesDocument(LoadedData: Record "DWH integration log")
     var
@@ -56,7 +63,8 @@ report 50004 "DWH Data processing"
             SalesHeader.Validate("Sell-to Customer No.", Customer."No.")
         else begin
             Customer.Init();
-            Customer."No." := NoSeriesMgt.GetNextNo('CUST', LoadedData."Posting Date", true);
+            SalesRecSetup.Get();
+            Customer."No." := NoSeriesMgt.GetNextNo(SalesRecSetup."Customer Nos.", LoadedData."Posting Date", true);
             Customer.Validate(Name, LoadedData."Debtor Name");
             Customer.Validate("Case ID", LoadedData."Case ID");
             Customer.Validate("Case ID Expiration Date", LoadedData."Case Expiration Date");
@@ -85,14 +93,18 @@ report 50004 "DWH Data processing"
         SalesHeader.Validate(Correction, LoadedData.Correction);
         DimensionCode := GetDimension(LoadedData);
         DimensionValues.Init;
-        DimensionValues.SetRange("Dimension Code", 'GUDFOOD');//PORTAFOGLIO
+        GenLedgerSetup.get();
+        DimensionValues.SetRange("Dimension Code", GenLedgerSetup."Global Dimension 1 Code");
         DimensionValues.SetRange(Code, DimensionCode);
         if (DimensionValues.FindFirst) then begin
             SalesHeader."Shortcut Dimension 1 Code" := DimensionCode
         end else begin
+            DimensionValues.Init();
+            DimensionValues.Validate("Dimension Code", GenLedgerSetup."Global Dimension 1 Code");
             DimensionValues.Validate(Code, DimensionCode);
             DimensionValues.Validate(Name, DimensionCode);
             DimensionValues.Insert();
+            SalesHeader."Shortcut Dimension 1 Code" := DimensionCode
         end;
         SalesHeader.Insert();
 
@@ -117,7 +129,7 @@ report 50004 "DWH Data processing"
         DWHsetup.Get();
         GenJournal.Validate("Journal Template Name", 'GENERAL');
         GenJournal.Validate("Journal Batch Name", 'DEFAULT');
-        GenJournal.Validate("Line No.", 10000 * (GenJournal.Count + 1));
+        GenJournal.Validate("Line No.", GenJournal.GetNewLineNo(GenJournal."Journal Template Name", GenJournal."Journal Batch Name"));
         GenJournal.Validate("Posting Date", WorkDate());
         if (LoadedData.DocumentType = LoadedData.DocumentType::" ") then begin
             GenJournal.Validate("Document Type", GenJournal."Document Type"::Invoice);
@@ -145,7 +157,8 @@ report 50004 "DWH Data processing"
 
         DimensionCode := GetDimension(LoadedData);
         DimensionValues.Init;
-        DimensionValues.SetRange("Dimension Code", 'GUDFOOD');//PORTAFOGLIO
+        GenLedgerSetup.get();
+        DimensionValues.SetRange("Dimension Code", GenLedgerSetup."Global Dimension 1 Code");
         DimensionValues.SetRange(Code, DimensionCode);
         if (DimensionValues.FindFirst) then begin
             GenJournal."Shortcut Dimension 1 Code" := DimensionCode

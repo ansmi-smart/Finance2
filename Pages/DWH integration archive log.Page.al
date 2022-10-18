@@ -5,7 +5,7 @@ page 50005 "DWH integration archive log"
     UsageCategory = Lists;
     PageType = List;
     SourceTable = "DWH integration archive log";
-    //Editable = false;
+    Editable = false;
 
     layout
     {
@@ -152,11 +152,17 @@ page 50005 "DWH integration archive log"
                 var
                     Archive: Page "DWH integration archive log";
                     LoadedData: Record "DWH integration log";
+                    EntryNo: Integer;
                 begin
                     CurrPage.SetSelectionFilter(Rec);
                     Rec.FindSet();
                     repeat
+                        if LoadedData.FindSet() then
+                            EntryNo := LoadedData.Count + 1
+                        else
+                            EntryNo := 1;
                         LoadedData.TransferFields(Rec, true);
+                        LoadedData."Entry No." := EntryNo;
                         LoadedData.Insert();
                         Rec.Delete();
                     until Rec.Next() = 0;
