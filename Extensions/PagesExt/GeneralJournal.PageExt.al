@@ -2,11 +2,10 @@ pageextension 50001 "General Journal Page Ext" extends "General Journal"
 {
     layout
     {
-        addafter("Account Name")
+        addafter("Account No.")
         {
             field(CaseID; Rec."Case ID")
             {
-                ApplicationArea = All;
             }
         }
     }

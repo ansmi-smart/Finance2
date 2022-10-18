@@ -6,7 +6,6 @@ pageextension 50005 "Cust. Ledger Entries Page Ext." extends "Customer Ledger En
         {
             field(CaseID; Rec."Case ID")
             {
-                Caption = 'Case ID';
             }
         }
     }

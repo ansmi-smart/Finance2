@@ -6,7 +6,6 @@ pageextension 50007 "Posted Sales Invoice Page Ext." extends "Posted Sales Invoi
         {
             field(CaseID; Rec."Case ID")
             {
-                Caption = 'Case ID';
             }
         }
     }

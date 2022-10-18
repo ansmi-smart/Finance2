@@ -18,12 +18,7 @@ report 50004 "DWH Data processing"
     begin
         if LoadedData.FindSet() then begin
             repeat
-                if (Archive.FindSet()) then
-                    LineNo := Archive.Count + 1
-                else
-                    LineNo := 1;
                 Archive.TransferFields(LoadedData, true);
-                Archive."Line No." := LineNo;
                 Archive.Insert();
                 CreateSalesDocument(LoadedData);
                 AddGenJournalLines(LoadedData);
@@ -36,8 +31,6 @@ report 50004 "DWH Data processing"
         Customer: Record Customer;
         DWHsetup: Record "DWH integration setup";
         GenJournal: Record "Gen. Journal Line";
-        FldRef: FieldRef;
-        RecRef: RecordRef;
         DimensionCode: Code[20];
         DimensionValues: Record "Dimension Value";
 
@@ -108,8 +101,11 @@ report 50004 "DWH Data processing"
         SalesLines."Document No." := SalesHeader."No.";
         SalesLines.Validate("Line No.", 10000);
         SalesLines.Validate(Type, SalesLines.Type::"G/L Account");
+        Account.Init();
+        DWHsetup.Get();
         Account.SetRange("No.", DWHsetup."Invoice default G/L Account");
-        SalesLines."No." := Account."No.";
+        if (Account.FindFirst) then
+            SalesLines.Validate("No.", Account."No.");
         SalesLines.Validate(Quantity, LoadedData.Quantity);
         SalesLines.Validate("Unit Price", LoadedData.Amount);
         SalesLines.Insert();
@@ -119,8 +115,6 @@ report 50004 "DWH Data processing"
     begin
         GenJournal.Init();
         DWHsetup.Get();
-        RecRef.Open(Database::"Gen. Journal Line");
-        RecRef.Init();
         GenJournal.Validate("Journal Template Name", 'GENERAL');
         GenJournal.Validate("Journal Batch Name", 'DEFAULT');
         GenJournal.Validate("Line No.", 10000 * (GenJournal.Count + 1));
@@ -149,19 +143,16 @@ report 50004 "DWH Data processing"
             LoadedData.Amount := (-1) * LoadedData.Amount;
         GenJournal.Validate(Amount, LoadedData.Amount);
 
-        FldRef := RecRef.Field(GenJournal.FieldNo("Shortcut Dimension 1 Code"));
         DimensionCode := GetDimension(LoadedData);
-        if (TryValidation(FldRef, DimensionCode)) then
-            GenJournal.Validate("Shortcut Dimension 1 Code", DimensionCode)
-        else begin
-            DimensionValues.Init;
-            DimensionValues.SetRange("Dimension Code", 'GUDFOOD');//PORTAFOGLIO
-            if (DimensionValues.FindFirst) then begin
-                DimensionValues.Validate(Code, DimensionCode);
-                DimensionValues.Validate(Name, DimensionCode);
-            end;
+        DimensionValues.Init;
+        DimensionValues.SetRange("Dimension Code", 'GUDFOOD');//PORTAFOGLIO
+        DimensionValues.SetRange(Code, DimensionCode);
+        if (DimensionValues.FindFirst) then begin
+            GenJournal."Shortcut Dimension 1 Code" := DimensionCode
+        end else begin
+            DimensionValues.Validate(Code, DimensionCode);
+            DimensionValues.Validate(Name, DimensionCode);
             DimensionValues.Insert();
-            GenJournal.Validate("Shortcut Dimension 1 Code", DimensionCode);
         end;
         GenJournal.Insert();
     end;
@@ -197,11 +188,5 @@ report 50004 "DWH Data processing"
                 Zeros := '000';
         end;
         exit(Zeros);
-    end;
-
-    [TryFunction]
-    procedure TryValidation(fldRef: FieldRef; NewValue: Variant)
-    begin
-        fldRef.Validate(NewValue);
     end;
 }

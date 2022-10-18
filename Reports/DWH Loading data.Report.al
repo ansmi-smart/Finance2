@@ -37,7 +37,7 @@ report 50003 "DWH Loading data"
             Buffer.Reset();
             "DWH integration log".Init();
             for Row := 2 to LastRow do begin
-                "DWH integration log"."Line No." := "DWH integration log".Count + GetNumber(Buffer, 1, Row);
+                "DWH integration log"."Entry No." := "DWH integration log".Count + GetNumber(Buffer, 1, Row);
                 "DWH integration log"."Debtor Name" := GetText(Buffer, 2, Row);
                 "DWH integration log"."Debtor Tax Code" := GetText(Buffer, 3, Row);
                 "DWH integration log"."Debtor Address" := GetText(Buffer, 4, Row);

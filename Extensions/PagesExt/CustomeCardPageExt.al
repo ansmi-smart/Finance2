@@ -7,11 +7,9 @@ pageextension 50008 "Custome Card Page Ext." extends "Customer Card"
         {
             field(CaseID; Rec."Case ID")
             {
-                Caption = 'Case ID';
             }
             field("Case ID Expiration Date"; Rec."Case ID Expiration Date")
             {
-                Caption = 'Case ID Expiration Date';
             }
         }
 
@@ -20,11 +18,9 @@ pageextension 50008 "Custome Card Page Ext." extends "Customer Card"
 
             field("Fiscal Code"; Rec."Fiscal Code")
             {
-                Caption = 'Fiscal Code';
             }
             field(SDI; Rec.SDI)
             {
-                Caption = 'SDI';
             }
         }
     }

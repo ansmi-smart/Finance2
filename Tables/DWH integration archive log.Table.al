@@ -4,9 +4,10 @@ table 50002 "DWH integration archive log"
 
     fields
     {
-        field(1; "Line No."; Integer)
+        field(1; "Entry No."; Integer)
         {
-            Caption = 'Line No.';
+            Caption = 'Entry No.';
+            AutoIncrement = true;
         }
         field(2; "Debtor Name"; Text[250])
         {
@@ -138,7 +139,7 @@ table 50002 "DWH integration archive log"
 
     keys
     {
-        key(PK; "Line No.")
+        key(PK; "Entry No.")
         {
             Clustered = true;
         }

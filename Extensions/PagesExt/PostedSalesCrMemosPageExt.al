@@ -6,7 +6,6 @@ pageextension 50013 "Posted Sales Cr. Memos PageExt" extends "Posted Sales Credi
         {
             field(CaseID; Rec."Case ID")
             {
-                Caption = 'Case ID';
             }
         }
     }
