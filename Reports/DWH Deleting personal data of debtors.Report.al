@@ -1,7 +1,10 @@
 report 50008 "DWH Deleting personal data"
 {
+    Caption = 'DWH Deleting personal data';
+    ProcessingOnly = true;
+    UseRequestPage = false;
 
-    trigger OnInitReport()
+    trigger OnPreReport()
     var
         Customer: Record Customer;
     begin

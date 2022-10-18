@@ -5,7 +5,7 @@ report 50004 "DWH Data processing"
     UseRequestPage = false;
 
 
-    trigger OnInitReport()
+    trigger OnPreReport()
     begin
         ProcessAllData();
     end;
