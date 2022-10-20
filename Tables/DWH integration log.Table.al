@@ -145,4 +145,12 @@ table 50000 "DWH integration log"
             Clustered = true;
         }
     }
+
+    trigger OnDelete()
+    var
+        Archive: Record "DWH integration archive log";
+    begin
+        Archive.TransferFields(Rec, true);
+        Archive.Insert();
+    end;
 }

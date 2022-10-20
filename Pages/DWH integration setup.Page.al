@@ -74,4 +74,14 @@ page 50007 "DWH integration setup"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        Rec.Reset;
+        if not Rec.Get then begin
+            Rec.Init;
+            Rec.Insert;
+        end;
+    end;
+
 }

@@ -149,26 +149,24 @@ page 50005 "DWH integration archive log"
                 PromotedCategory = Process;
 
                 trigger OnAction()
-                var
-                    Archive: Page "DWH integration archive log";
-                    LoadedData: Record "DWH integration log";
-                    EntryNo: Integer;
                 begin
-                    CurrPage.SetSelectionFilter(Rec);
-                    Rec.FindSet();
-                    repeat
-                        if LoadedData.FindSet() then
-                            EntryNo := LoadedData.Count + 1
-                        else
-                            EntryNo := 1;
-                        LoadedData.TransferFields(Rec, true);
-                        LoadedData."Entry No." := EntryNo;
-                        LoadedData.Insert();
-                        Rec.Delete();
-                    until Rec.Next() = 0;
+                    TransferFromArchiveToLogTable(Rec);
                 end;
             }
         }
     }
+
+    procedure TransferFromArchiveToLogTable(Rec: Record "DWH integration archive log")
+    var
+        LoadedData: Record "DWH integration log";
+    begin
+        Rec.FindSet();
+        CurrPage.SetSelectionFilter(Rec);
+        repeat
+            LoadedData.TransferFields(Rec, true);
+            LoadedData.Insert();
+            Rec.Delete();
+        until Rec.Next() = 0;
+    end;
 
 }

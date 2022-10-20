@@ -146,13 +146,7 @@ page 50001 "DWH integration log"
                 Promoted = true;
                 PromotedCategory = Process;
                 Image = ImportExcel;
-
-                trigger OnAction()
-                var
-                    ProcessData: Report "DWH Data processing";
-                begin
-                    ProcessData.ProcessAllData();
-                end;
+                RunObject = report "DWH Data processing";
             }
         }
     }
