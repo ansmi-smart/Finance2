@@ -145,6 +145,7 @@ page 50005 "DWH integration archive log"
             action("Transfer data from archive to Log")
             {
                 Caption = 'Transfer data from archive to Log';
+                Image = TransferToLines;
                 Promoted = true;
                 PromotedCategory = Process;
 

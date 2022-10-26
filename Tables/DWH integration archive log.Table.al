@@ -38,6 +38,7 @@ table 50002 "DWH integration archive log"
         {
             Caption = 'Document Type';
             OptionMembers = " ","Payment","Refund","Invoice";
+            OptionCaption = ' ,Payment,Refund,Invoice;';
         }
         field(9; "Transaction ID"; Text[20])
         {
@@ -100,6 +101,7 @@ table 50002 "DWH integration archive log"
         {
             Caption = 'Account Type';
             OptionMembers = " ","G/L Account","Debtor","Customer","Vendor","Bank Account","Fixed Asset","IC Partner";
+            OptionCaption = ' ,G/L Account,Debtor,Customer,Vendor,Bank Account,Fixed Asset,IC Partner';
         }
         field(24; "Account No."; Code[20])
         {
@@ -109,6 +111,7 @@ table 50002 "DWH integration archive log"
         {
             Caption = 'Bal. Account Type';
             OptionMembers = " ","G/L Account","Customer","Vendor","Bank Account","Fixed Asset","IC Partner";
+            OptionCaption = ' ,G/L Account,Customer,Vendor,Bank Account,Fixed Asset,IC Partner';
         }
         field(26; "Bal. Account No."; Code[20])
         {
@@ -126,6 +129,7 @@ table 50002 "DWH integration archive log"
         {
             Caption = 'Meta Check';
             OptionMembers = " ","Invoice","Expense";
+            OptionCaption = ' ,Invoice,Expense';
         }
         field(30; "Meta Marte Insert Date"; DateTime)
         {
@@ -134,6 +138,14 @@ table 50002 "DWH integration archive log"
         field(31; "Meta DWH Insert Date"; DateTime)
         {
             Caption = 'Meta DWH Insert Date';
+        }
+        field(32; "Processing counter"; Integer)
+        {
+            Caption = 'Processing counter';
+        }
+        field(33; "Error Massage"; Text[250])
+        {
+            Caption = 'Error Massage';
         }
     }
 

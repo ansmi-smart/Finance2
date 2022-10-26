@@ -28,7 +28,7 @@ pageextension 50008 "Custome Card Page Ext." extends "Customer Card"
     {
         addafter(Attachments)
         {
-            action("Clear client's personal data")
+            action("Clear")
             {
                 Caption = 'Clear client`s personal data';
                 Image = ClearLog;

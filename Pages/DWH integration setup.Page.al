@@ -71,6 +71,10 @@ page 50007 "DWH integration setup"
                 {
                     ApplicationArea = All;
                 }
+                field("Max. processing amount"; Rec."Max. processing amount")
+                {
+                    ApplicationArea = ALL;
+                }
             }
         }
     }

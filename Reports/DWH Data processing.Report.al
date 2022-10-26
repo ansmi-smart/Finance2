@@ -12,9 +12,15 @@ report 50004 "DWH Data processing"
             var
                 data: Record "DWH integration log";
             begin
-                CreateSalesDocument(DWHintegrationlog);
-                data.get(DWHintegrationlog."Entry No.");
-                data.Delete(true);
+                DWHsetup.Get();
+                if DWHintegrationlog."Processing counter" <= DWHsetup."Max. processing amount" then begin
+                    if (DWHintegrationlog.DocumentType = DWHintegrationlog.DocumentType::Invoice) and (DWHintegrationlog.Correction = false) and (DWHintegrationlog.Invoiced = true) then begin
+                        CreateSalesDocument(DWHintegrationlog);
+                    end else
+                        AddGenJournalLines(DWHintegrationlog);
+                    data.get(DWHintegrationlog."Entry No.");
+                    data.Delete(true);
+                end;
             end;
         }
     }
@@ -34,12 +40,40 @@ report 50004 "DWH Data processing"
         SalesLines: Record "Sales Line";
         NoSeriesMgt: Codeunit NoSeriesManagement;
     begin
+        SalesHeader.Init();
+        SalesHeader.Validate("No.", NoSeriesMgt.GetNextNo(SalesHeader.GetNoSeriesCode(), LoadedData."Posting Date", true));
+        SalesHeader.Validate("Document Type", SalesHeader."Document Type"::Invoice);
+        SalesHeader.Validate("Posting Date", LoadedData."Posting Date");
+        SalesHeader.Validate("Document Date", LoadedData."Posting Date");
+        SalesHeader.Validate("Sell-to Customer No.", GetNoAndCreateCustomer(LoadedData));
+        SalesHeader."Currency Code" := LoadedData."Currency Code";
+        SalesHeader.Validate("Posting Description", LoadedData.Description);
+        SalesHeader.Validate(Correction, LoadedData.Correction);
+        ValidatedDimCode := CreteDimension(LoadedData);
+        SalesHeader.ValidateShortcutDimCode(GetPotrafoglioFieldNo('PORTAFOGLIO'), ValidatedDimCode);
+        ValidatedDimCode := LoadedData."Flow ID";
+        SalesHeader.ValidateShortcutDimCode(GetPotrafoglioFieldNo('FLOW'), ValidatedDimCode);
+        SalesHeader.Insert();
+
+        SalesLines.Init();
+        SalesLines.Validate("Document Type", SalesHeader."Document Type");
+        SalesLines."Document No." := SalesHeader."No.";
+        SalesLines.Validate("Line No.", 10000);
+        SalesLines.Validate(Type, SalesLines.Type::"G/L Account");
+        SalesLines.Validate("No.", DWHsetup."Invoice default G/L Account");
+        SalesLines.Validate(Quantity, LoadedData.Quantity);
+        SalesLines.Validate(Amount, LoadedData.Amount);
+        SalesLines.Insert();
+    end;
+
+    procedure GetNoAndCreateCustomer(LoadedData: Record "DWH integration log"): Code[20]
+    begin
         Customer.SetRange(Name, LoadedData."Debtor Name");
         if (Customer.FindFirst) then
-            SalesHeader.Validate("Sell-to Customer No.", Customer."No.")
+            exit(Customer."No.")
         else begin
             Customer.Init();
-            Customer.CreateNewCustomer(LoadedData."Debtor Name", false);
+            Customer.Get(Customer.CreateNewCustomer(LoadedData."Debtor Name", false));
             Customer."Case ID" := LoadedData."Case ID";
             Customer."Case ID Expiration Date" := LoadedData."Case Expiration Date";
             Customer.SDI := Format(LoadedData.SDI);
@@ -55,46 +89,17 @@ report 50004 "DWH Data processing"
                 Customer.Validate(Address, LoadedData."Debtor Address".Substring(1, StrLen(LoadedData."Debtor Address") - 5));
                 Customer.Validate("Post Code", LoadedData."Debtor Address".Substring(StrLen(LoadedData."Debtor Address") - 5));
             end;
-            DWHsetup.Get();
             Customer.Validate("Gen. Bus. Posting Group", DWHsetup."Default Gen. Bus. Post. Group");
             Customer.Validate("VAT Bus. Posting Group", DWHsetup."Default VAT Bus. Posting Group");
             Customer.Validate("Customer Posting Group", DWHsetup."Default Customer Post. Group");
-            Customer.Insert();
+            Customer.Modify(true);
+            exit(Customer."No.")
         end;
-
-        SalesHeader.Init();
-        SalesHeader.Validate("No.", NoSeriesMgt.GetNextNo(SalesHeader.GetNoSeriesCode(), LoadedData."Posting Date", true));
-        if (LoadedData.DocumentType = LoadedData.DocumentType::Invoice) and (LoadedData.Correction = false) and (LoadedData.Invoiced = true) then begin
-            SalesHeader.Validate("Document Type", SalesHeader."Document Type"::Invoice);
-            SalesHeader.Validate("Posting Date", LoadedData."Posting Date");
-            SalesHeader.Validate("Document Date", LoadedData."Posting Date");
-            SalesHeader.Validate("Sell-to Customer No.", Customer."No.");
-            SalesHeader."Currency Code" := LoadedData."Currency Code";
-            SalesHeader.Validate("Posting Description", LoadedData.Description);
-            SalesHeader.Validate(Correction, LoadedData.Correction);
-            ValidatedDimCode := CreteDimension(LoadedData);
-            SalesHeader.ValidateShortcutDimCode(GetPotrafoglioFieldNo('PORTAFOGLIO'), ValidatedDimCode);
-            ValidatedDimCode := LoadedData."Flow ID";
-            SalesHeader.ValidateShortcutDimCode(GetPotrafoglioFieldNo('FLOW'), ValidatedDimCode);
-            SalesHeader.Insert();
-
-            SalesLines.Init();
-            SalesLines.Validate("Document Type", SalesHeader."Document Type");
-            SalesLines."Document No." := SalesHeader."No.";
-            SalesLines.Validate("Line No.", 10000);
-            SalesLines.Validate(Type, SalesLines.Type::"G/L Account");
-            SalesLines.Validate("No.", DWHsetup."Invoice default G/L Account");
-            SalesLines.Validate(Quantity, LoadedData.Quantity);
-            SalesLines.Validate(Amount, LoadedData.Amount);
-            SalesLines.Insert();
-        end else
-            AddGenJournalLines(DWHintegrationlog);
     end;
 
     procedure AddGenJournalLines(LoadedData: Record "DWH integration log")
     begin
         GenJournal.Init();
-        DWHsetup.Get();
         GenJournal.Validate("Journal Template Name", 'GENERAL');
         GenJournal.Validate("Journal Batch Name", 'DEFAULT');
         GenJournal.Validate("Line No.", GenJournal.GetNewLineNo(GenJournal."Journal Template Name", GenJournal."Journal Batch Name"));
@@ -108,10 +113,7 @@ report 50004 "DWH Data processing"
         end else begin
             GenJournal.Validate("Document Type", LoadedData.DocumentType);
             GenJournal.Validate("Account Type", GenJournal."Account Type"::Customer);
-            Customer.Init();
-            Customer.SetRange(Name, LoadedData."Debtor Name");
-            if (Customer.FindFirst) then
-                GenJournal.Validate("Account No.", Customer."No.");
+            GenJournal.Validate("Account No.", GetNoAndCreateCustomer(LoadedData));
             GenJournal.Validate("Bal. Account Type", GenJournal."Bal. Account Type"::"Bank Account");
             GenJournal.Validate("Bal. Account No.", DWHsetup."Default Bank Account");
         end;
@@ -159,22 +161,24 @@ report 50004 "DWH Data processing"
     procedure GetPotrafoglioFieldNo(DimCode: Code[20]): Integer
     begin
         GenLedgerSetup.get();
-        if (GenLedgerSetup."Shortcut Dimension 1 Code" = DimCode) then
-            exit(1) else
-            if (GenLedgerSetup."Shortcut Dimension 2 Code" = DimCode) then
-                exit(2) else
-                if (GenLedgerSetup."Shortcut Dimension 3 Code" = DimCode) then
-                    exit(3) else
-                    if (GenLedgerSetup."Shortcut Dimension 4 Code" = DimCode) then
-                        exit(4) else
-                        if (GenLedgerSetup."Shortcut Dimension 5 Code" = DimCode) then
-                            exit(5) else
-                            if (GenLedgerSetup."Shortcut Dimension 6 Code" = DimCode) then
-                                exit(6) else
-                                if (GenLedgerSetup."Shortcut Dimension 7 Code" = DimCode) then
-                                    exit(7) else
-                                    if (GenLedgerSetup."Shortcut Dimension 8 Code" = DimCode) then
-                                        exit(8)
+        case DimCode of
+            GenLedgerSetup."Shortcut Dimension 1 Code":
+                exit(1);
+            GenLedgerSetup."Shortcut Dimension 2 Code":
+                exit(2);
+            GenLedgerSetup."Shortcut Dimension 3 Code":
+                exit(3);
+            GenLedgerSetup."Shortcut Dimension 4 Code":
+                exit(4);
+            GenLedgerSetup."Shortcut Dimension 5 Code":
+                exit(5);
+            GenLedgerSetup."Shortcut Dimension 6 Code":
+                exit(6);
+            GenLedgerSetup."Shortcut Dimension 7 Code":
+                exit(7);
+            GenLedgerSetup."Shortcut Dimension 8 Code":
+                exit(8);
+        end;
     end;
 
     procedure GetDimension(LoadedData: Record "DWH integration log"): Code[20]

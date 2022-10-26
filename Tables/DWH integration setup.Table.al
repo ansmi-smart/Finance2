@@ -20,7 +20,7 @@ table 50006 "DWH integration setup"
         }
         field(4; "Password"; Text[50])
         {
-            Caption = 'Api URL';
+            Caption = 'Password';
             ExtendedDatatype = Masked;
         }
         field(5; "Default Gen. Bus. Post. Group"; Code[20])
@@ -78,6 +78,10 @@ table 50006 "DWH integration setup"
         {
             Caption = 'Default Expenses Credit G/L Account';
             TableRelation = "G/L Account"."No.";
+        }
+        field(16; "Max. processing amount"; Integer)
+        {
+            Caption = 'Max. processing amount';
         }
     }
 

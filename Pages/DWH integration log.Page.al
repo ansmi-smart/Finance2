@@ -132,6 +132,14 @@ page 50001 "DWH integration log"
                 {
                     ApplicationArea = All;
                 }
+                field("Processing counter"; Rec."Processing counter")
+                {
+                    ApplicationArea = All;
+                }
+                field("Error Massage"; Rec."Error Massage")
+                {
+                    ApplicationArea = All;
+                }
             }
 
         }

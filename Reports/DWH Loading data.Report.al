@@ -6,18 +6,13 @@ report 50003 "DWH Loading data"
     ProcessingOnly = true;
     UseRequestPage = false;
 
-    dataset
-    {
-        dataitem("DWH integration log"; "DWH integration log")
-        {
-
-        }
-    }
-
     trigger OnPreReport()
     begin
         Import();
     end;
+
+    var
+        DWHintegrationlog: Record "DWH integration log";
 
     procedure Import()
     var
@@ -36,41 +31,42 @@ report 50003 "DWH Loading data"
             Buffer.FindLast();
             LastRow := Buffer."Row No.";
             Buffer.Reset();
-            "DWH integration log".Init();
+            DWHintegrationlog.Init();
             for Row := 2 to LastRow do begin
-                "DWH integration log"."Entry No." := 0;
-                "DWH integration log"."Debtor Name" := GetText(Buffer, 2, Row);
-                "DWH integration log"."Debtor Tax Code" := GetText(Buffer, 3, Row);
-                "DWH integration log"."Debtor Address" := GetText(Buffer, 4, Row);
-                "DWH integration log"."Case ID" := GetText(Buffer, 5, Row);
-                "DWH integration log"."Case Expiration Date" := GetDate(Buffer, 6, Row);
-                "DWH integration log".SDI := 0000000;
-                EVALUATE("DWH integration log".DocumentType, GetText(Buffer, 8, Row));
-                "DWH integration log"."Transaction ID" := GetText(Buffer, 9, Row);
-                "DWH integration log"."Portfolio ID" := GetText(Buffer, 10, Row);
-                "DWH integration log"."Portfolio Name" := GetText(Buffer, 11, Row);
-                "DWH integration log"."Batch ID" := GetText(Buffer, 12, Row);
-                "DWH integration log"."Batch Name" := GetText(Buffer, 13, Row);
-                "DWH integration log"."Segment ID" := GetText(Buffer, 14, Row);
-                "DWH integration log"."Segment Name" := GetText(Buffer, 15, Row);
-                "DWH integration log"."Flow ID" := GetText(Buffer, 16, Row);
-                "DWH integration log"."Posting Date" := GetDate(Buffer, 17, Row);
-                "DWH integration log"."Currency Code" := GetText(Buffer, 18, Row);
-                "DWH integration log".Description := GetText(Buffer, 19, Row);
-                "DWH integration log"."G\L Local Account" := GetText(Buffer, 20, Row);
-                "DWH integration log".Amount := GetNumber(Buffer, 22, Row);
-                EVALUATE("DWH integration log"."Account Type", GetText(Buffer, 23, Row));
-                "DWH integration log"."Account No." := GetText(Buffer, 24, Row);
-                EVALUATE("DWH integration log"."Bal. Account Type", GetText(Buffer, 25, Row));
-                "DWH integration log"."Bal. Account No." := GetText(Buffer, 26, Row);
-                "DWH integration log".Correction := GetBoolean(Buffer, 27, Row);
-                "DWH integration log".Invoiced := GetBoolean(Buffer, 28, Row);
+                DWHintegrationlog."Entry No." := 0;
+                DWHintegrationlog."Debtor Name" := GetText(Buffer, 2, Row);
+                DWHintegrationlog."Debtor Tax Code" := GetText(Buffer, 3, Row);
+                DWHintegrationlog."Debtor Address" := GetText(Buffer, 4, Row);
+                DWHintegrationlog."Case ID" := GetText(Buffer, 5, Row);
+                DWHintegrationlog."Case Expiration Date" := GetDate(Buffer, 6, Row);
+                DWHintegrationlog.SDI := 0000000;
+                EVALUATE(DWHintegrationlog.DocumentType, GetText(Buffer, 8, Row));
+                DWHintegrationlog."Transaction ID" := GetText(Buffer, 9, Row);
+                DWHintegrationlog."Portfolio ID" := GetText(Buffer, 10, Row);
+                DWHintegrationlog."Portfolio Name" := GetText(Buffer, 11, Row);
+                DWHintegrationlog."Batch ID" := GetText(Buffer, 12, Row);
+                DWHintegrationlog."Batch Name" := GetText(Buffer, 13, Row);
+                DWHintegrationlog."Segment ID" := GetText(Buffer, 14, Row);
+                DWHintegrationlog."Segment Name" := GetText(Buffer, 15, Row);
+                DWHintegrationlog."Flow ID" := GetText(Buffer, 16, Row);
+                DWHintegrationlog."Posting Date" := GetDate(Buffer, 17, Row);
+                DWHintegrationlog."Currency Code" := GetText(Buffer, 18, Row);
+                DWHintegrationlog.Description := GetText(Buffer, 19, Row);
+                DWHintegrationlog."G\L Local Account" := GetText(Buffer, 20, Row);
+                DWHintegrationlog.Amount := GetNumber(Buffer, 22, Row);
+                EVALUATE(DWHintegrationlog."Account Type", GetText(Buffer, 23, Row));
+                DWHintegrationlog."Account No." := GetText(Buffer, 24, Row);
+                EVALUATE(DWHintegrationlog."Bal. Account Type", GetText(Buffer, 25, Row));
+                DWHintegrationlog."Bal. Account No." := GetText(Buffer, 26, Row);
+                DWHintegrationlog.Correction := GetBoolean(Buffer, 27, Row);
+                DWHintegrationlog.Invoiced := GetBoolean(Buffer, 28, Row);
                 TempData := GetText(Buffer, 29, Row);
                 if (TempData = 'Error - both empty') then TempData := ' ';
-                EVALUATE("DWH integration log"."Meta Check", TempData);
-                "DWH integration log"."Meta Marte Insert Date" := GetDateTime(Buffer, 30, Row);
-                "DWH integration log"."Meta DWH Insert Date" := GetDateTime(Buffer, 31, Row);
-                "DWH integration log".Insert();
+                EVALUATE(DWHintegrationlog."Meta Check", TempData);
+                DWHintegrationlog."Meta Marte Insert Date" := GetDateTime(Buffer, 30, Row);
+                DWHintegrationlog."Meta DWH Insert Date" := GetDateTime(Buffer, 31, Row);
+                DWHintegrationlog."Processing counter" := 0;
+                DWHintegrationlog.Insert();
             end;
         end;
     end;

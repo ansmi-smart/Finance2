@@ -8,6 +8,7 @@ report 50008 "DWH Deleting personal data"
     var
         Customer: Record Customer;
     begin
+        Customer.SetFilter("Case ID Expiration Date", '<', WorkDate());
         if (Customer.FindSet()) then
             repeat
                 if (Customer."Case ID Expiration Date" <> 0D) then
