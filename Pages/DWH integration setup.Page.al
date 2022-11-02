@@ -19,6 +19,10 @@ page 50007 "DWH integration setup"
                 {
                     ApplicationArea = All;
                 }
+                field("Authorization Code"; Rec."Authorization Code")
+                {
+                    ApplicationArea = All;
+                }
                 field(Login; Rec.Login)
                 {
                     ApplicationArea = All;

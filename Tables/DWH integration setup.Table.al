@@ -83,6 +83,10 @@ table 50006 "DWH integration setup"
         {
             Caption = 'Max. processing amount';
         }
+        field(17; "Authorization Code"; Text[100])
+        {
+            Caption = 'Authorization Code';
+        }
     }
 
     keys

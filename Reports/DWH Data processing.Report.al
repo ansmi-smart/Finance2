@@ -17,20 +17,20 @@ report 50004 "DWH Data processing"
             var
                 data: Record "DWH integration log";
             begin
-                if not DWHProcessing.Run(DWHintegrationlog) then begin
-                    DWHintegrationlog."Processing counter" += 1;
-                    DWHintegrationlog."Error Massage" := GetLastErrorText();
-                    DWHintegrationlog.Modify();
-                end else begin
-                    if DWHintegrationlog."Processing counter" <= DWHsetup."Max. processing amount" then begin
-                        if (DWHintegrationlog.DocumentType = DWHintegrationlog.DocumentType::Invoice) and (DWHintegrationlog.Correction = false) and (DWHintegrationlog.Invoiced = true) then begin
-                            CreateSalesDocument(DWHintegrationlog);
-                        end else
-                            AddGenJournalLines(DWHintegrationlog);
-                        data.get(DWHintegrationlog."Entry No.");
-                        data.Delete(true);
-                    end;
+                /*if not DWHProcessing.Run(DWHintegrationlog) then begin
+                DWHintegrationlog."Processing counter" += 1;
+                DWHintegrationlog."Error Massage" := GetLastErrorText();
+                DWHintegrationlog.Modify();
+                end else begin*/
+                if DWHintegrationlog."Processing counter" <= DWHsetup."Max. processing amount" then begin
+                    if (DWHintegrationlog.DocumentType = DWHintegrationlog.DocumentType::Invoice) and (DWHintegrationlog.Correction = false) and (DWHintegrationlog.Invoiced = true) then begin
+                        CreateSalesDocument(DWHintegrationlog);
+                    end else
+                        AddGenJournalLines(DWHintegrationlog);
+                    data.get(DWHintegrationlog."Entry No.");
+                    data.Delete(true);
                 end;
+                // end;
             end;
         }
     }
