@@ -79,8 +79,12 @@ report 50004 "DWH Data processing"
     end;
 
     procedure GetNoAndCreateCustomer(LoadedData: Record "DWH integration log"): Code[20]
+    var
+        FiscalCodePositionDelimeter: Integer;
     begin
-        Customer.SetRange("Fiscal Code", LoadedData."Debtor Tax Code".Substring(1, LoadedData."Debtor Tax Code".IndexOf('-') - 1));
+        if (LoadedData."Debtor Tax Code".IndexOf('-') = 0) then
+            FiscalCodePositionDelimeter := StrLen(LoadedData."Debtor Tax Code");
+        Customer.SetRange("Fiscal Code", LoadedData."Debtor Tax Code".Substring(1, FiscalCodePositionDelimeter));
         if (Customer.FindFirst) then
             exit(Customer."No.")
         else begin
@@ -91,13 +95,13 @@ report 50004 "DWH Data processing"
             Customer.SDI := Format(LoadedData.SDI);
             if (LoadedData."Debtor Tax Code" <> '  ') then begin
                 if (LoadedData."Debtor Tax Code".Contains('-')) then begin
-                    Customer.Validate("Fiscal Code", LoadedData."Debtor Tax Code".Substring(1, LoadedData."Debtor Tax Code".IndexOf('-') - 1));
+                    Customer.Validate("Fiscal Code", LoadedData."Debtor Tax Code".Substring(1, FiscalCodePositionDelimeter));
                     Customer.Validate("VAT Registration No.", LoadedData."Debtor Tax Code".Substring(LoadedData."Debtor Tax Code".IndexOf('-') + 1));
                 end else
                     Customer.Validate("Fiscal Code", LoadedData."Debtor Tax Code");
                 Customer.Validate("VAT Registration No.", LoadedData."Debtor Tax Code".Substring(LoadedData."Debtor Tax Code".IndexOf('-') + 1));
             end;
-            if (LoadedData."Debtor Address" <> '  ') then begin
+            if (StrLen(LoadedData."Debtor Address") > 5) then begin
                 Customer.Validate(Address, LoadedData."Debtor Address".Substring(1, StrLen(LoadedData."Debtor Address") - 5));
                 Customer.Validate("Post Code", LoadedData."Debtor Address".Substring(StrLen(LoadedData."Debtor Address") - 5));
             end;
@@ -199,11 +203,11 @@ report 50004 "DWH Data processing"
         DimensionCode: Code[20];
     begin
         DimensionCode := '';
-        if (LoadedData."Portfolio ID" <> ' ') then
+        if (LoadedData."Portfolio ID" <> '') then
             DimensionCode := getZeros(4, StrLen(LoadedData."Portfolio ID")) + LoadedData."Portfolio ID" + '.';
-        if (LoadedData."Batch ID" <> ' ') then
+        if (LoadedData."Batch ID" <> '') then
             DimensionCode += getZeros(3, StrLen(LoadedData."Batch ID")) + LoadedData."Batch ID" + '.';
-        if (LoadedData."Segment ID" <> ' ') then begin
+        if (LoadedData."Segment ID" <> '') then begin
             DimensionCode += getZeros(2, StrLen(LoadedData."Segment ID")) + LoadedData."Segment ID";
             exit(DimensionCode);
         end else
