@@ -84,7 +84,7 @@ page 50001 "DWH integration log"
                 {
                     ApplicationArea = All;
                 }
-                field("GL\Local Account"; Rec."G\L Local Account")
+                field("G\L Local Account"; Rec."G\L Local Account")
                 {
                     ApplicationArea = All;
                 }

@@ -4,7 +4,35 @@ report 50003 "DWH Loading data"
     ApplicationArea = all;
     UsageCategory = Documents;
     ProcessingOnly = true;
-    UseRequestPage = false;
+    UseRequestPage = true;
+
+    requestpage
+    {
+        SaveValues = true;
+        layout
+        {
+            area(content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+                    field(PostingDate; PostingDateReq)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Posting Date';
+                    }
+                }
+            }
+        }
+
+        trigger OnOpenPage()
+        begin
+            if PostingDateReq = 0D then
+                PostingDateReq := WorkDate;
+        end;
+
+        var
+    }
 
     trigger OnPreReport()
     begin
@@ -14,6 +42,7 @@ report 50003 "DWH Loading data"
 
     var
         DWHintegrationlog: Record "DWH integration log";
+        PostingDateReq: Date;
 
     procedure GetDataFromAPI()
     var
@@ -29,14 +58,14 @@ report 50003 "DWH Loading data"
         TempDate: Text;
     begin
         DWHSetup.FindFirst();
-        ImportURL := DWHSetup."Api URL" + '2022-10-27?code=' + DWHSetup."Authorization Code";
+        ImportURL := DWHSetup."Api URL" + format(PostingDateReq).Replace('/', '-') + '?code=' + DWHSetup."Authorization Code";
         Client.DefaultRequestHeaders.Add('Accept', 'application/Json');
         Client.Get(ImportURL, Response);
         if Response.IsSuccessStatusCode then begin
             Response.Content().ReadAs(ResponseString);
             ResponseString := ResponseString.Replace('gL\\Local Account', 'GLAccount');
             ResponseArray.ReadFrom(ResponseString);
-            for i := 0 to 1 do begin
+            for i := 0 to (ResponseArray.Count - 1) do begin
                 ResponseArray.Get(i, JToken);
                 ResponseObject := JToken.AsObject();
                 DWHintegrationlog.Init();
@@ -48,8 +77,11 @@ report 50003 "DWH Loading data"
                 TempDate := GetJsonToken(ResponseObject, 'caseExpirationDate').AsValue().AsText();
                 Evaluate(DWHintegrationlog."Case Expiration Date", TempDate.Substring(1, 10));
                 DWHintegrationlog.SDI := GetJsonToken(ResponseObject, 'sdi').AsValue().AsInteger();
-                if (Format(GetJsonToken(ResponseObject, 'portfolioID').AsValue()) <> 'null') then
-                    EVALUATE(DWHintegrationlog.DocumentType, GetJsonToken(ResponseObject, 'documentType').AsValue().AsText());
+                if (Format(GetJsonToken(ResponseObject, 'documentType').AsValue()) <> 'null') then
+                    if (Format(GetJsonToken(ResponseObject, 'documentType').AsValue().AsText()) = 'Invoice (without invoice)') then
+                        EVALUATE(DWHintegrationlog.DocumentType, 'Invoice')
+                    else
+                        EVALUATE(DWHintegrationlog.DocumentType, GetJsonToken(ResponseObject, 'documentType').AsValue().AsText());
                 DWHintegrationlog."Transaction ID" := GetJsonToken(ResponseObject, 'transactionID').AsValue().AsText();
                 if (Format(GetJsonToken(ResponseObject, 'portfolioID').AsValue()) <> 'null') then
                     DWHintegrationlog."Portfolio ID" := GetJsonToken(ResponseObject, 'portfolioID').AsValue().AsText();
@@ -63,7 +95,8 @@ report 50003 "DWH Loading data"
                     DWHintegrationlog."Segment ID" := GetJsonToken(ResponseObject, 'segmentID').AsValue().AsText();
                 if (Format(GetJsonToken(ResponseObject, 'segmentName').AsValue()) <> 'null') then
                     DWHintegrationlog."Segment Name" := GetJsonToken(ResponseObject, 'segmentName').AsValue().AsText();
-                DWHintegrationlog."Flow ID" := GetJsonToken(ResponseObject, 'flowID').AsValue().AsText();
+                if (Format(GetJsonToken(ResponseObject, 'flowID').AsValue()) <> 'null') then
+                    DWHintegrationlog."Flow ID" := GetJsonToken(ResponseObject, 'flowID').AsValue().AsText();
                 TempDate := GetJsonToken(ResponseObject, 'postingDate').AsValue().AsText();
                 Evaluate(DWHintegrationlog."Posting Date", TempDate.Substring(1, 10));
                 if (Format(GetJsonToken(ResponseObject, 'currencyCode').AsValue()) <> 'null') then
@@ -82,16 +115,16 @@ report 50003 "DWH Loading data"
                     EVALUATE(DWHintegrationlog."Bal. Account Type", GetJsonToken(ResponseObject, 'bal AccountType').AsValue().AsText());
                 if (Format(GetJsonToken(ResponseObject, 'bal AccountNo').AsValue()) <> 'null') then
                     DWHintegrationlog."Bal. Account No." := GetJsonToken(ResponseObject, 'bal AccountNo').AsValue().AsText();
-                if (GetJsonToken(ResponseObject, 'correction').AsValue().AsInteger() = 1) then
+                if (Format(GetJsonToken(ResponseObject, 'correction').AsValue()) = '1') then
                     DWHintegrationlog.Correction := true
                 else
                     DWHintegrationlog.Correction := false;
-
-                if (GetJsonToken(ResponseObject, 'invoiced').AsValue().AsInteger() = 1) then
+                if (Format(GetJsonToken(ResponseObject, 'invoiced').AsValue()) = '1') then
                     DWHintegrationlog.Invoiced := true
                 else
                     DWHintegrationlog.Invoiced := false;
-                EVALUATE(DWHintegrationlog."Meta Check", GetJsonToken(ResponseObject, 'meta_Chck').AsValue().AsText());
+                if not (GetJsonToken(ResponseObject, 'meta_Chck').AsValue().AsText() = 'Error - both empty') then
+                    EVALUATE(DWHintegrationlog."Meta Check", GetJsonToken(ResponseObject, 'meta_Chck').AsValue().AsText());
                 DWHintegrationlog."Meta Marte Insert Date" := GetJsonToken(ResponseObject, 'meta_MarteInsertDate').AsValue().AsDateTime();
                 DWHintegrationlog."Meta DWH Insert Date" := GetJsonToken(ResponseObject, 'meta_DWHInsertDate').AsValue().AsDateTime();
                 DWHintegrationlog.Insert();

@@ -60,7 +60,8 @@ report 50004 "DWH Data processing"
         SalesHeader."Currency Code" := LoadedData."Currency Code";
         SalesHeader.Validate("Posting Description", LoadedData.Description);
         SalesHeader.Validate(Correction, LoadedData.Correction);
-        ValidatedDimCode := CreteDimension(LoadedData);
+        if (LoadedData."Flow ID" <> '') then
+            ValidatedDimCode := CreteDimension(LoadedData);
         SalesHeader.ValidateShortcutDimCode(GetPotrafoglioFieldNo('PORTAFOGLIO'), ValidatedDimCode);
         ValidatedDimCode := LoadedData."Flow ID";
         SalesHeader.ValidateShortcutDimCode(GetPotrafoglioFieldNo('FLOW'), ValidatedDimCode);
@@ -79,7 +80,7 @@ report 50004 "DWH Data processing"
 
     procedure GetNoAndCreateCustomer(LoadedData: Record "DWH integration log"): Code[20]
     begin
-        Customer.SetRange(Name, LoadedData."Debtor Name");
+        Customer.SetRange("Fiscal Code", LoadedData."Debtor Tax Code".Substring(1, LoadedData."Debtor Tax Code".IndexOf('-') - 1));
         if (Customer.FindFirst) then
             exit(Customer."No.")
         else begin
@@ -135,7 +136,8 @@ report 50004 "DWH Data processing"
         if (LoadedData.DocumentType = LoadedData.DocumentType::Payment) then
             LoadedData.Amount := (-1) * LoadedData.Amount;
         GenJournal.Validate(Amount, LoadedData.Amount);
-        ValidatedDimCode := CreteDimension(LoadedData);
+        if (LoadedData."Flow ID" <> '') then
+            ValidatedDimCode := CreteDimension(LoadedData);
         GenJournal.ValidateShortcutDimCode(GetPotrafoglioFieldNo('PORTAFOGLIO'), ValidatedDimCode);
         ValidatedDimCode := LoadedData."Flow ID";
         GenJournal.ValidateShortcutDimCode(GetPotrafoglioFieldNo('FLOW'), ValidatedDimCode);

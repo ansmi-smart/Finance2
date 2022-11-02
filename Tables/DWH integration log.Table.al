@@ -87,7 +87,7 @@ table 50000 "DWH integration log"
         }
         field(20; "G\L Local Account"; Code[20])
         {
-            Caption = 'GL\Local Account';
+            Caption = 'G\L Local Account';
         }
         field(21; "Quantity"; Integer)
         {
