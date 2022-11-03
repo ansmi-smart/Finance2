@@ -28,24 +28,25 @@ codeunit 50000 DWHProcessing
             CreateGenJournalLines(DWHintegrationlog);
     end;
 
-    procedure CreateSalesDocument(DWHLog: Record "DWH integration log")
+    procedure CreateSalesDocument(LoadedData: Record "DWH integration log")
     var
         SalesHeader: Record "Sales Header";
         SalesLines: Record "Sales Line";
         NoSeriesMgt: Codeunit NoSeriesManagement;
     begin
         SalesHeader.Init();
-        SalesHeader.Validate("No.", NoSeriesMgt.GetNextNo(SalesHeader.GetNoSeriesCode(), DWHLog."Posting Date", true));
+        SalesHeader.Validate("No.", NoSeriesMgt.GetNextNo(SalesHeader.GetNoSeriesCode(), LoadedData."Posting Date", true));
         SalesHeader.Validate("Document Type", SalesHeader."Document Type"::Invoice);
-        SalesHeader.Validate("Posting Date", DWHLog."Posting Date");
-        SalesHeader.Validate("Document Date", DWHLog."Posting Date");
-        SalesHeader.Validate("Sell-to Customer No.", GetNoAndCreateCustomer(DWHLog));
-        SalesHeader."Currency Code" := DWHLog."Currency Code";
-        SalesHeader.Validate("Posting Description", DWHLog.Description);
-        SalesHeader.Validate(Correction, DWHLog.Correction);
-        ValidatedDimCode := CreteDimension(DWHLog);
+        SalesHeader.Validate("Posting Date", LoadedData."Posting Date");
+        SalesHeader.Validate("Document Date", LoadedData."Posting Date");
+        SalesHeader.Validate("Sell-to Customer No.", GetNoAndCreateCustomer(LoadedData));
+        SalesHeader."Currency Code" := LoadedData."Currency Code";
+        SalesHeader.Validate("Posting Description", LoadedData.Description);
+        SalesHeader.Validate(Correction, LoadedData.Correction);
+        if (LoadedData."Flow ID" <> '') then
+            ValidatedDimCode := CreteDimension(LoadedData);
         SalesHeader.ValidateShortcutDimCode(GetPotrafoglioFieldNo('PORTAFOGLIO'), ValidatedDimCode);
-        ValidatedDimCode := DWHLog."Flow ID";
+        ValidatedDimCode := LoadedData."Flow ID";
         SalesHeader.ValidateShortcutDimCode(GetPotrafoglioFieldNo('FLOW'), ValidatedDimCode);
         SalesHeader.Insert();
 
@@ -55,69 +56,38 @@ codeunit 50000 DWHProcessing
         SalesLines.Validate("Line No.", 10000);
         SalesLines.Validate(Type, SalesLines.Type::"G/L Account");
         SalesLines.Validate("No.", DWHsetup."Invoice default G/L Account");
-        SalesLines.Validate(Quantity, DWHLog.Quantity);
-        SalesLines.Validate(Amount, DWHLog.Amount);
+        SalesLines.Validate(Quantity, LoadedData.Quantity);
+        SalesLines.Validate(Amount, LoadedData.Amount);
         SalesLines.Insert();
     end;
 
-    procedure CreateGenJournalLines(DWHLog: Record "DWH integration log")
-    begin
-        GenJournal.Init();
-        GenJournal.Validate("Journal Template Name", 'GENERAL');
-        GenJournal.Validate("Journal Batch Name", 'DEFAULT');
-        GenJournal.Validate("Line No.", GenJournal.GetNewLineNo(GenJournal."Journal Template Name", GenJournal."Journal Batch Name"));
-        GenJournal.Validate("Posting Date", WorkDate());
-        if (DWHLog.DocumentType = DWHLog.DocumentType::" ") then begin
-            GenJournal.Validate("Document Type", GenJournal."Document Type"::Invoice);
-            GenJournal.Validate("Account Type", GenJournal."Account Type"::"G/L Account");
-            GenJournal.Validate("Account No.", DWHsetup."Def. Exp. Debit G/L Account");
-            GenJournal.Validate("Bal. Account Type", GenJournal."Bal. Account Type"::"G/L Account");
-            GenJournal.Validate("Bal. Account No.", DWHsetup."Def. Exp. Credit G/L Account");
-        end else begin
-            GenJournal.Validate("Document Type", DWHLog.DocumentType);
-            GenJournal.Validate("Account Type", GenJournal."Account Type"::Customer);
-            GenJournal.Validate("Account No.", GetNoAndCreateCustomer(DWHLog));
-            GenJournal.Validate("Bal. Account Type", GenJournal."Bal. Account Type"::"Bank Account");
-            GenJournal.Validate("Bal. Account No.", DWHsetup."Default Bank Account");
-        end;
-        GenJournal.Validate("Document No.", DWHLog."Transaction ID");
-        GenJournal.Validate(Description, DWHLog.Description);
-        GenJournal.Validate("Case ID", DWHLog."Case ID");
-        GenJournal."Currency Code" := DWHLog."Currency Code";
-        if (DWHLog.DocumentType = DWHLog.DocumentType::Payment) then
-            DWHLog.Amount := (-1) * DWHLog.Amount;
-        GenJournal.Validate(Amount, DWHLog.Amount);
-        ValidatedDimCode := CreteDimension(DWHLog);
-        GenJournal.ValidateShortcutDimCode(GetPotrafoglioFieldNo('PORTAFOGLIO'), ValidatedDimCode);
-        ValidatedDimCode := DWHLog."Flow ID";
-        GenJournal.ValidateShortcutDimCode(GetPotrafoglioFieldNo('FLOW'), ValidatedDimCode);
-        GenJournal.Insert();
-    end;
-
-    procedure GetNoAndCreateCustomer(DWHLog: Record "DWH integration log"): Code[20]
+    procedure GetNoAndCreateCustomer(LoadedData: Record "DWH integration log"): Code[20]
     var
         Customer: Record Customer;
+        FiscalCodePositionDelimeter: Integer;
     begin
-        Customer.SetRange(Name, DWHLog."Debtor Name");
+        if (LoadedData."Debtor Tax Code".IndexOf('-') = 0) then
+            FiscalCodePositionDelimeter := StrLen(LoadedData."Debtor Tax Code");
+        Customer.SetRange("Fiscal Code", LoadedData."Debtor Tax Code".Substring(1, FiscalCodePositionDelimeter));
         if (Customer.FindFirst) then
             exit(Customer."No.")
         else begin
             Customer.Init();
-            Customer.Get(Customer.CreateNewCustomer(DWHLog."Debtor Name", false));
-            Customer."Case ID" := DWHLog."Case ID";
-            Customer."Case ID Expiration Date" := DWHLog."Case Expiration Date";
-            Customer.SDI := Format(DWHLog.SDI);
-            if (DWHLog."Debtor Tax Code" <> '  ') then begin
-                if (DWHLog."Debtor Tax Code".Contains('-')) then begin
-                    Customer.Validate("Fiscal Code", DWHLog."Debtor Tax Code".Substring(1, DWHLog."Debtor Tax Code".IndexOf('-') - 1));
-                    Customer.Validate("VAT Registration No.", DWHLog."Debtor Tax Code".Substring(DWHLog."Debtor Tax Code".IndexOf('-') + 1));
+            Customer.Get(Customer.CreateNewCustomer(LoadedData."Debtor Name", false));
+            Customer."Case ID" := LoadedData."Case ID";
+            Customer."Case ID Expiration Date" := LoadedData."Case Expiration Date";
+            Customer.SDI := Format(LoadedData.SDI);
+            if (LoadedData."Debtor Tax Code" <> '  ') then begin
+                if (LoadedData."Debtor Tax Code".Contains('-')) then begin
+                    Customer.Validate("Fiscal Code", LoadedData."Debtor Tax Code".Substring(1, FiscalCodePositionDelimeter));
+                    Customer.Validate("VAT Registration No.", LoadedData."Debtor Tax Code".Substring(LoadedData."Debtor Tax Code".IndexOf('-') + 1));
                 end else
-                    Customer.Validate("Fiscal Code", DWHLog."Debtor Tax Code");
-                Customer.Validate("VAT Registration No.", DWHLog."Debtor Tax Code".Substring(DWHLog."Debtor Tax Code".IndexOf('-') + 1));
+                    Customer.Validate("Fiscal Code", LoadedData."Debtor Tax Code");
+                Customer.Validate("VAT Registration No.", LoadedData."Debtor Tax Code".Substring(LoadedData."Debtor Tax Code".IndexOf('-') + 1));
             end;
-            if (DWHLog."Debtor Address" <> '  ') then begin
-                Customer.Validate(Address, DWHLog."Debtor Address".Substring(1, StrLen(DWHLog."Debtor Address") - 5));
-                Customer.Validate("Post Code", DWHLog."Debtor Address".Substring(StrLen(DWHLog."Debtor Address") - 5));
+            if (StrLen(LoadedData."Debtor Address") > 5) then begin
+                Customer.Validate(Address, LoadedData."Debtor Address".Substring(1, StrLen(LoadedData."Debtor Address") - 5));
+                Customer.Validate("Post Code", LoadedData."Debtor Address".Substring(StrLen(LoadedData."Debtor Address") - 5));
             end;
             Customer.Validate("Gen. Bus. Posting Group", DWHsetup."Default Gen. Bus. Post. Group");
             Customer.Validate("VAT Bus. Posting Group", DWHsetup."Default VAT Bus. Posting Group");
@@ -125,6 +95,41 @@ codeunit 50000 DWHProcessing
             Customer.Modify(true);
             exit(Customer."No.")
         end;
+    end;
+
+    procedure CreateGenJournalLines(LoadedData: Record "DWH integration log")
+    begin
+        GenJournal.Init();
+        GenJournal.Validate("Journal Template Name", 'GENERAL');
+        GenJournal.Validate("Journal Batch Name", 'DEFAULT');
+        GenJournal.Validate("Line No.", GenJournal.GetNewLineNo(GenJournal."Journal Template Name", GenJournal."Journal Batch Name"));
+        GenJournal.Validate("Posting Date", WorkDate());
+        if (LoadedData.DocumentType = LoadedData.DocumentType::" ") then begin
+            GenJournal.Validate("Document Type", GenJournal."Document Type"::Invoice);
+            GenJournal.Validate("Account Type", GenJournal."Account Type"::"G/L Account");
+            GenJournal.Validate("Account No.", DWHsetup."Def. Exp. Debit G/L Account");
+            GenJournal.Validate("Bal. Account Type", GenJournal."Bal. Account Type"::"G/L Account");
+            GenJournal.Validate("Bal. Account No.", DWHsetup."Def. Exp. Credit G/L Account");
+        end else begin
+            GenJournal.Validate("Document Type", LoadedData.DocumentType);
+            GenJournal.Validate("Account Type", GenJournal."Account Type"::Customer);
+            GenJournal.Validate("Account No.", GetNoAndCreateCustomer(LoadedData));
+            GenJournal.Validate("Bal. Account Type", GenJournal."Bal. Account Type"::"Bank Account");
+            GenJournal.Validate("Bal. Account No.", DWHsetup."Default Bank Account");
+        end;
+        GenJournal.Validate("Document No.", LoadedData."Transaction ID");
+        GenJournal.Validate(Description, LoadedData.Description);
+        GenJournal.Validate("Case ID", LoadedData."Case ID");
+        GenJournal."Currency Code" := LoadedData."Currency Code";
+        if (LoadedData.DocumentType = LoadedData.DocumentType::Payment) then
+            LoadedData.Amount := (-1) * LoadedData.Amount;
+        GenJournal.Validate(Amount, LoadedData.Amount);
+        if (LoadedData."Flow ID" <> '') then
+            ValidatedDimCode := CreteDimension(LoadedData);
+        GenJournal.ValidateShortcutDimCode(GetPotrafoglioFieldNo('PORTAFOGLIO'), ValidatedDimCode);
+        ValidatedDimCode := LoadedData."Flow ID";
+        GenJournal.ValidateShortcutDimCode(GetPotrafoglioFieldNo('FLOW'), ValidatedDimCode);
+        GenJournal.Insert();
     end;
 
     procedure CreteDimension(LoadedData: Record "DWH integration log"): Code[20]
@@ -193,7 +198,7 @@ codeunit 50000 DWHProcessing
             exit('000000');
     end;
 
-    local procedure getZeros(Amount: Integer; Existed: integer): Text
+    local procedure getZeros(Amount: Integer; Existed: Integer): Text
     var
         Zeros: Text[4];
     begin
